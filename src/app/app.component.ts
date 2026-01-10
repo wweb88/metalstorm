@@ -7,6 +7,7 @@ import { Select } from 'primeng/select';
 import { Checkbox } from 'primeng/checkbox';
 import { TableModule } from 'primeng/table';
 import * as XLSX from 'xlsx';
+import { HttpClient } from '@angular/common/http';
 
 interface Avion {
   nombre: string;
@@ -80,8 +81,55 @@ export class AppComponent {
   resultadosTabla: ResultadoTabla[] = [];
   seleccionados: ResultadoTabla[] = [];
   
-  constructor() {
+  constructor( private http: HttpClient ) {
     this.cargarDataInfo();
+    this.leerExcelDesdeGoogle();
+  }
+
+  leerExcelDesdeGoogle() {
+    // URL del Google Sheets exportado como Excel
+    const spreadsheetId = '1cVVBsGpxT9QLyaj5b004y2J7G3vWsfhA6QyWIEjxRss';
+    const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=xlsx`;
+    
+    this.http.get(url, { responseType: 'arraybuffer' }).subscribe(
+      (data) => {
+        try {
+          const bstr = new Uint8Array(data);
+          const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'array' });
+          
+          // Procesar cada pestaña (cada jugador)
+          this.jugadores = wb.SheetNames.map(sheetName => {
+            const ws: XLSX.WorkSheet = wb.Sheets[sheetName];
+            const dataRows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+            
+            // Procesar aviones: primera columna = nombre, segunda = nivel
+            const aviones = dataRows
+              .filter((row: any) => row[0] && row[1] !== undefined) // Filtrar filas válidas
+              .map((row: any) => ({
+                nombre: row[0],
+                nivel: Number(row[1]) || 0
+              }))
+              .filter(avion => avion.nivel > 0); // Solo aviones con nivel > 0
+            
+            return {
+              jugador: sheetName,
+              aviones: aviones
+            };
+          });
+          
+          console.log('=== DATOS DE JUGADORES (Cargados desde Google Sheets) ===');
+          console.log(JSON.stringify(this.jugadores, null, 2));
+          console.log('=========================================================');
+          
+          this.excelData = this.jugadores;
+        } catch (error) {
+          console.error('Error al procesar el archivo de Google Sheets:', error);
+        }
+      },
+      (error) => {
+        console.error('Error al descargar el archivo de Google Sheets:', error);
+      }
+    );
   }
   
   async cargarDataInfo() {
@@ -99,52 +147,7 @@ export class AppComponent {
     }
   }
 
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    
-    if (file) {
-      this.fileName = file.name;
-      const reader = new FileReader();
-      
-      reader.onload = (e: any) => {
-        try {
-          const bstr: string = e.target.result;
-          const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-          
-          // Procesar cada pestaña (cada jugador)
-          this.jugadores = wb.SheetNames.map(sheetName => {
-            const ws: XLSX.WorkSheet = wb.Sheets[sheetName];
-            const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-            
-            // Procesar aviones: primera columna = nombre, segunda = nivel
-            const aviones = data
-              .filter((row: any) => row[0] && row[1] !== undefined) // Filtrar filas válidas
-              .map((row: any) => ({
-                nombre: row[0],
-                nivel: Number(row[1]) || 0
-              }))
-              .filter(avion => avion.nivel > 0); // Solo aviones con nivel > 0
-            
-            return {
-              jugador: sheetName,
-              aviones: aviones
-            };
-          });
-          
-          console.log('=== DATOS DE JUGADORES ===');
-          console.log(JSON.stringify(this.jugadores, null, 2));
-          console.log('=========================');
-          
-          this.excelData = this.jugadores;
-        } catch (error) {
-          console.error('Error al leer el archivo:', error);
-        }
-      };
-      
-      reader.readAsBinaryString(file);
-    }
-  }
-  
+
   onNivelChange(): void {
     this.seleccionados = [];
     this.aplicarFiltros();

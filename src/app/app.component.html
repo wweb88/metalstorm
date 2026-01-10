@@ -1,15 +1,11 @@
 <div style="display: flex; justify-content: flex-start; align-items: center; min-height: 100vh; flex-direction: column; gap: 20px; padding: 20px;">
   <h1>Metalstorm SQUAD</h1>
   
-  <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
-    <input 
-      type="file" 
-      #fileInput
-      (change)="onFileSelected($event)" 
-      accept=".xlsx,.xls,.csv"
-      style="padding: 10px; border: 2px solid #ccc; border-radius: 4px;"
-    />
-  </div>
+  @if (jugadores.length === 0) {
+    <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+      <p style="color: #666; font-size: 14px;">Cargando datos desde Google Sheets...</p>
+    </div>
+  }
 
   <!-- Vista de filtros (se muestra cuando se carga el archivo) -->
   @if (jugadores.length > 0) {
