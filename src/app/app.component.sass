@@ -1,0 +1,45 @@
+
+
+.images
+    display: flex
+    -webkit-box-pack: center
+    justify-content: center
+    -webkit-box-align: center
+    align-items: center
+    height: 40px
+    width: 55px
+    position: relative
+    img
+        height: 40px;
+        position: absolute;
+        display: block;
+        margin: auto;
+
+
+
+.contentData
+    display: grid
+    grid-template-columns: repeat(8, 1fr)
+    width: 100%
+    margin: 0 auto
+    gap: 20px
+    &-filters
+        grid-column: span 1
+    &-results
+        grid-column: span 5
+    
+    &-selected
+        grid-column: span 2
+
+
+.typeBox
+    display: flex
+    flex-direction: column
+    gap: 12px
+    &-type
+        display: flex
+        align-items: center
+        gap: 16px
+        img
+            width: 42px
+            cursor: pointer

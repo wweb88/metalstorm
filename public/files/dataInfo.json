@@ -1,0 +1,278 @@
+{
+  "types": [
+    {
+      "name": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-light-fighter-bg.png"
+    },
+    {
+      "name": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-medium-fighter-bg.png"
+    },
+    {
+      "name": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-heavy-fighter-bg.png"
+    },
+    {
+      "name": "Interceptor",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-interceptor-bg.png"
+    },
+    {
+      "name": "Attack",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-attack-bg.png"
+    }
+  ],
+  "planes": [
+    {
+      "name": "F3-R",
+      "subName": "RAFALE",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-rafale-b-icon-solid.png"
+    },
+    {
+      "name": "TORNADO",
+      "subName": "ADV",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-tornado-icon-solid.png"
+    },
+    {
+      "name": "MIRAGE",
+      "subName": "2000",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-mirage-2000-icon-solid.png"
+    },
+    {
+      "name": "JAS39",
+      "subName": "GRIPEN",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-jas39e-gripen-icon-solid.png"
+    },
+    {
+      "name": "F-16",
+      "subName": "Fighting Falcon",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f16-icon-solid.png"
+    },
+    {
+      "name": "MiG-19",
+      "subName": "Farmer",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-mig19-icon-solid.png"
+    },
+    {
+      "name": "FGR4",
+      "subName": "Typhoon",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-typhoon-icon-solid.png"
+    },
+    {
+      "name": "F1",
+      "subName": "Mirage",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-mirage-f1c-icon-solid.png"
+    },
+    {
+      "name": "A-4",
+      "subName": "Skyhawk",
+      "type": "Attack",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-a4-icon-solid.png"
+    },
+    {
+      "name": "JA37",
+      "subName": "Viggen",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-ja37di-viggen-icon-solid.png"
+    },
+    {
+      "name": "Su-47",
+      "subName": "Berkut",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su47-icon-solid.png"
+    },
+    {
+      "name": "MiG-29",
+      "subName": "Fulcrum",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-mig29-icon-solid.png"
+    },
+    {
+      "name": "Su-35",
+      "subName": "Super Flanker",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su35s-icon-solid.png"
+    },
+    {
+      "name": "GR3",
+      "subName": "Jaguar",
+      "type": "Attack",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-jaguar-icon-solid.png"
+    },
+    {
+      "name": "Su-57",
+      "subName": "Felon",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su57-icon-solid.png"
+    },
+    {
+      "name": "F-22",
+      "subName": "Raptor",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f22-icon-solid.png"
+    },
+    {
+      "name": "F-5",
+      "subName": "Tiger",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f5-icon-solid.png"
+    },
+    {
+      "name": "F-35",
+      "subName": "Lightning",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f35c-icon-solid.png"
+    },
+    {
+      "name": "J-20",
+      "subName": "Mighty Dragon",
+      "type": "Interceptor",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-j20-icon-solid.png"
+    },
+    {
+      "name": "F-111",
+      "subName": "Aardvark",
+      "type": "Interceptor",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f111-icon-solid.png"
+    },
+    {
+      "name": "J-10",
+      "subName": "Firebird",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-j10-icon-solid.png"
+    },
+    {
+      "name": "Jf-17",
+      "subName": "Thunder",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-jf17-icon-solid.png"
+    },
+    {
+      "name": "MiG-21",
+      "subName": "Fishbed",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-mig21-icon-solid.png"
+    },
+    {
+      "name": "A-10",
+      "subName": "Thunderbolt",
+      "type": "Attack",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-a10-icon-solid.png"
+    },
+    {
+      "name": "M.III",
+      "subName": "Mirage",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-mirage-iii-icon-solid.png"
+    },
+    {
+      "name": "MiG-23",
+      "subName": "Flogger",
+      "type": "Light Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-mig23-icon-solid.png"
+    },
+    {
+      "name": "Su-30",
+      "subName": "Strike Flanker",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su30-icon-solid.png"
+    },
+    {
+      "name": "Su-34",
+      "subName": "Fullback",
+      "type": "Attack",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su34-icon-solid.png"
+    },
+    {
+      "name": "Su-22",
+      "subName": "Fitter",
+      "type": "Attack",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su22-icon-solid.png"
+    },
+    {
+      "name": "J35",
+      "subName": "Draken",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-saab35-draken-icon-solid.png"
+    },
+    {
+      "name": "Su-33",
+      "subName": "Sea Flanker",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su33-icon-solid.png"
+    },
+    {
+      "name": "F/A-18F",
+      "subName": "Super Hornet",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f18f-icon-solid.png"
+    },
+    {
+      "name": "F/A-18",
+      "subName": "Hornet",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f18c-icon-solid.png"
+    },
+    {
+      "name": "F-15",
+      "subName": "Eagle",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f15c-icon-solid.png"
+    },
+    {
+      "name": "Su-27",
+      "subName": "Flanker",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su27-icon-solid.png"
+    },
+    {
+      "name": "F-4",
+      "subName": "Phantom",
+      "type": "Heavy Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f4-icon-solid.png"
+    },
+    {
+      "name": "F-14",
+      "subName": "Tomcat",
+      "type": "Interceptor",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f14d-icon-solid.png"
+    },
+    {
+      "name": "F-106",
+      "subName": "Delta Dart",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f106a-icon-solid.png"
+    },
+    {
+      "name": "MiG-31",
+      "subName": "Foxhound",
+      "type": "Interceptor",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-mig31-icon-solid.png"
+    },
+    {
+      "name": "A-6",
+      "subName": "Intruder",
+      "type": "Attack",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-a6e-icon-solid.png"
+    },
+    {
+      "name": "Su-25",
+      "subName": "Frogfoot",
+      "type": "Attack",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-su25-icon-solid.png"
+    },
+    {
+      "name": "F-100",
+      "subName": "Super Sabre",
+      "type": "Medium Fighter",
+      "image": "https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/plane-icons/jet-f100-icon-solid.png"
+    }
+  ]
+}

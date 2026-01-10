@@ -1,4 +1,124 @@
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; gap: 20px;">
-  <h1>Metalstorm v21</h1>
-  <p-button label="¡Funciona!" icon="pi pi-check"></p-button>
+<div style="display: flex; justify-content: flex-start; align-items: center; min-height: 100vh; flex-direction: column; gap: 20px; padding: 20px;">
+  <h1>Metalstorm SQUAD</h1>
+  
+  <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+    <input 
+      type="file" 
+      #fileInput
+      (change)="onFileSelected($event)" 
+      accept=".xlsx,.xls,.csv"
+      style="padding: 10px; border: 2px solid #ccc; border-radius: 4px;"
+    />
+  </div>
+
+  <!-- Vista de filtros (se muestra cuando se carga el archivo) -->
+  @if (jugadores.length > 0) {
+    <div class="contentData">
+      <div class="contentData-filters">
+          <!-- Select de Niveles -->
+          <div>
+            <h3>Selecciona el Nivel:</h3>
+            <p-select 
+              [options]="nivelesDisponibles" 
+              [(ngModel)]="nivelSeleccionado"
+              placeholder="Selecciona un nivel"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onNivelChange()"
+              [style]="{'width': '100%'}"
+            ></p-select>
+          </div>
+          
+          <!-- Checkboxes de Tipos de Aviones -->
+          <div>
+            <h3>Selecciona Tipo:</h3>
+            <div class="typeBox">
+              @for (tipo of tiposInfo; track tipo.name) {
+                <div class="typeBox-type">
+                  <p-checkbox 
+                    [(ngModel)]="tiposSeleccionados"
+                    [value]="tipo.name"
+                    [inputId]="tipo.name"
+                    (onChange)="aplicarFiltros()"
+                  ></p-checkbox>
+                  <img [src]="tipo.image" [alt]="tipo.name" [title]="tipo.name" />
+                </div>
+              }
+            </div>
+          </div>
+      </div>
+      <div class="contentData-results">
+        <!-- Tabla de Resultados -->
+        @if (resultadosTabla.length > 0) {
+          <div>
+            <div>
+              <p-table [value]="resultadosTabla" [tableStyle]="{'min-width': '50rem'}">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Nombre del Avión</th>
+                    <th>Nombre del Jugador</th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-resultado>
+                  <tr>
+                    <td>
+                      <div class="images">
+                        <img [src]="resultado.imagenTipo" [alt]="resultado.tipo" />
+                        <img [src]="resultado.imagenAvion" [alt]="resultado.nombreCompleto" />
+                      </div>
+                    </td>
+                    <td>{{ resultado.nombreCompleto }}</td>
+                    <td>{{ resultado.jugador }}</td>
+                    <td style="text-align: center;">
+                      <p-checkbox 
+                        [binary]="true"
+                        [(ngModel)]="resultado.seleccionado"
+                        (onChange)="onToggleSeleccion(resultado)"
+                      ></p-checkbox>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        }
+
+        @if (nivelSeleccionado && tiposSeleccionados.length > 0 && resultadosTabla.length === 0) {
+          <div style="text-align: center; color: #999; margin-top: 20px;">
+            No se encontraron resultados para los filtros seleccionados.
+          </div>
+        }
+      </div>
+      
+      <div class="contentData-selected">
+        @if (seleccionados.length > 0) {
+          <div>
+            <p-table [value]="seleccionados" [tableStyle]="{'min-width': '30rem'}">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Tipo</th>
+                  <th>Avión</th>
+                  <th>Jugador</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-seleccionado>
+                <tr>
+                  <td>
+                    <div class="images">
+                      <img [src]="seleccionado.imagenTipo" [alt]="seleccionado.tipo" />
+                      <img [src]="seleccionado.imagenAvion" [alt]="seleccionado.nombreCompleto" />
+                    </div>
+                  </td>
+                  <td>{{ seleccionado.nombreCompleto }}</td>
+                  <td>{{ seleccionado.jugador }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        }
+      </div>
+    </div>
+  }
 </div>
