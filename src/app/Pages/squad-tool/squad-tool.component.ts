@@ -1,4 +1,4 @@
-import { Component , OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { MenuItem } from 'primeng/api';
 import { Breadcrumb } from 'primeng/breadcrumb';
 
+// Interfaces
 interface Avion {
   nombre: string;
   nivel: number;
@@ -22,6 +23,7 @@ interface Jugador {
 }
 
 interface PlaneInfo {
+  id?: number; // Agregamos el ID que viene del backend
   name: string;
   subName: string;
   type: string;
@@ -45,7 +47,7 @@ interface ResultadoTabla {
 
 @Component({
   selector: 'app-squad-tool',
-  imports: [ButtonModule, CommonModule, FormsModule, Select, Checkbox, TableModule , Breadcrumb, DialogModule],
+  imports: [ButtonModule, CommonModule, FormsModule, Select, Checkbox, TableModule, Breadcrumb, DialogModule],
   templateUrl: './squad-tool.component.html',
   styleUrl: './squad-tool.component.sass',
 })
@@ -60,16 +62,8 @@ export class SquadToolComponent implements OnInit {
   mostrarModalPlantilla: boolean = false;
   terminoBusqueda: string = '';
   resultadosFiltrados: ResultadoTabla[] = [];
-  
-  // Datos del dataInfo.json - hardcoded para evitar problemas con BOM
-  tiposAviones: string[] = [
-    'Light Fighter',
-    'Medium Fighter',
-    'Heavy Fighter',
-    'Interceptor',
-    'Attack'
-  ];
-  
+
+  // Datos visuales de los Tipos (Estos los mantenemos aquí por los iconos de roles)
   tiposInfo: TypeInfo[] = [
     { name: 'Light Fighter', image: 'https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-light-fighter-bg.png' },
     { name: 'Medium Fighter', image: 'https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-medium-fighter-bg.png' },
@@ -77,25 +71,28 @@ export class SquadToolComponent implements OnInit {
     { name: 'Interceptor', image: 'https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-interceptor-bg.png' },
     { name: 'Attack', image: 'https://starform-playmetalstorm-assets.s3.us-west-2.amazonaws.com/role-icons/role-attack-bg.png' }
   ];
-  
+
+  // Aquí guardaremos los datos que vienen de TU BACKEND
   planesInfo: PlaneInfo[] = [];
-  
+
   // Filtros
   nivelesDisponibles = Array.from({ length: 20 }, (_, i) => ({ label: `Nivel ${i + 1}`, value: i + 1 }));
   nivelSeleccionado: number | null = null;
   tiposSeleccionados: string[] = [];
-  
+
   // Resultados
   resultadosTabla: ResultadoTabla[] = [];
   seleccionados: ResultadoTabla[] = [];
 
-
   items: MenuItem[] | undefined;
-
   home: MenuItem | undefined;
-  
-  constructor( private http: HttpClient ) {
-    this.cargarDataInfo();
+
+  // URL DE TU BACKEND (Alejandro API)
+  private apiUrl = 'http://localhost:5000/api/planes';
+
+  constructor(private http: HttpClient) {
+    // Al iniciar, llamamos a la API
+    this.cargarAvionesDesdeBackend();
   }
 
   ngOnInit() {
@@ -105,15 +102,34 @@ export class SquadToolComponent implements OnInit {
     this.home = { icon: 'pi pi-home', routerLink: '/' };
   }
 
+  // --- NUEVA FUNCIÓN: CONECTAR CON BACKEND ---
+  cargarAvionesDesdeBackend() {
+    console.log('📞 Llamando a la API de Alejandro...');
+    
+    this.http.get<PlaneInfo[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        console.log('✅ ¡Datos recibidos del Backend!', data);
+        this.planesInfo = data;
+        // Opcional: Si quieres verificar que son 42 aviones
+        console.log(`🛩️ Total aviones cargados: ${this.planesInfo.length}`);
+      },
+      error: (error) => {
+        console.error('❌ Error conectando al Backend (¿Está Docker prendido?):', error);
+        // Fallback: Si falla el backend, intentamos cargar el local por si acaso
+        // this.cargarDataInfoLocal(); 
+      }
+    });
+  }
+
+  // --- Lógica del Excel (Se mantiene igual) ---
   cargarDesdeUrl(): void {
     if (!this.urlGoogle.trim()) {
       this.errorMensaje = 'Por favor, ingresa una URL válida';
       return;
     }
 
-    // Extraer el ID del Google Sheets desde la URL
     const spreadsheetId = this.extraerIdDelGoogle(this.urlGoogle);
-    
+
     if (!spreadsheetId) {
       this.errorMensaje = 'URL inválida. Asegúrate de que sea una URL válida de Google Sheets';
       return;
@@ -125,46 +141,38 @@ export class SquadToolComponent implements OnInit {
   }
 
   private extraerIdDelGoogle(url: string): string | null {
-    // Patrón para extraer el ID del Google Sheets
     const patron = /spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
     const coincidencia = url.match(patron);
     return coincidencia ? coincidencia[1] : null;
   }
 
   private leerExcelDesdeGoogle(spreadsheetId: string) {
-    // URL del Google Sheets exportado como Excel
     const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=xlsx`;
-    
+
     this.http.get(url, { responseType: 'arraybuffer' }).subscribe(
       (data) => {
         try {
           const bstr = new Uint8Array(data);
           const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'array' });
-          
-          // Procesar cada pestaña (cada jugador)
+
           this.jugadores = wb.SheetNames.map(sheetName => {
             const ws: XLSX.WorkSheet = wb.Sheets[sheetName];
             const dataRows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-            
-            // Procesar aviones: primera columna = nombre, segunda = nivel
+
             const aviones = dataRows
-              .filter((row: any) => row[0] && row[1] !== undefined) // Filtrar filas válidas
+              .filter((row: any) => row[0] && row[1] !== undefined)
               .map((row: any) => ({
                 nombre: row[0],
                 nivel: Number(row[1]) || 0
               }))
-              .filter(avion => avion.nivel > 0); // Solo aviones con nivel > 0
-            
+              .filter(avion => avion.nivel > 0);
+
             return {
               jugador: sheetName,
               aviones: aviones
             };
           });
-          
-          console.log('=== DATOS DE JUGADORES (Cargados desde Google Sheets) ===');
-          console.log(JSON.stringify(this.jugadores, null, 2));
-          console.log('=========================================================');
-          
+
           this.excelData = this.jugadores;
           this.cargando = false;
         } catch (error) {
@@ -174,56 +182,39 @@ export class SquadToolComponent implements OnInit {
       (error) => {
         console.error('Error al descargar el archivo de Google Sheets:', error);
         this.cargando = false;
-        this.errorMensaje = 'Error al cargar el archivo. Verifica que la URL sea correcta y que el archivo sea accesible.';
+        this.errorMensaje = 'Error al cargar el archivo. Verifica que la URL sea correcta.';
         this.jugadores = [];
         this.resultadosTabla = [];
       }
     );
   }
-  
-  async cargarDataInfo() {
-    try {
-      const response = await fetch('/assets/files/dataInfo.json');
-      const text = await response.text();
-      
-      // Remover BOM si existe
-      const cleanText = text.replace(/^\uFEFF/, '');
-      const data = JSON.parse(cleanText);
-      this.planesInfo = data.planes as PlaneInfo[];
-      console.log('Planes cargados:', this.planesInfo.length);
-    } catch (error) {
-      console.error('Error al cargar dataInfo.json:', error);
-    }
-  }
 
-
+  // --- Filtros y Selección (Se mantienen igual pero usando this.planesInfo que ya viene del backend) ---
   onNivelChange(): void {
     this.seleccionados = [];
     this.aplicarFiltros();
   }
-  
+
   aplicarFiltros(): void {
     if (!this.nivelSeleccionado || this.tiposSeleccionados.length === 0) {
       this.resultadosTabla = [];
       this.aplicarBusqueda();
       return;
     }
-    
+
     const resultados: ResultadoTabla[] = [];
-    
-    // Recorrer cada jugador
+
     this.jugadores.forEach(jugador => {
-      // Recorrer cada avión del jugador
       jugador.aviones.forEach(avion => {
-        // Verificar si el nivel coincide
         if (avion.nivel === this.nivelSeleccionado) {
-          // Buscar información del avión en dataInfo
-          const planeInfo = this.planesInfo.find(p => 
+          
+          // AQUÍ BUSCAMOS EN LOS DATOS DEL BACKEND
+          const planeInfo = this.planesInfo.find(p =>
             p.name.toLowerCase() === avion.nombre.toLowerCase() ||
             `${p.name} ${p.subName}`.toLowerCase() === avion.nombre.toLowerCase() ||
             `${p.name}-${p.subName}`.toLowerCase() === avion.nombre.toLowerCase()
           );
-          
+
           if (planeInfo && this.tiposSeleccionados.includes(planeInfo.type)) {
             const tipoInfo = this.tiposInfo.find(t => t.name === planeInfo.type);
             const id = `${planeInfo.name}-${planeInfo.subName}-${jugador.jugador}`;
@@ -241,13 +232,11 @@ export class SquadToolComponent implements OnInit {
         }
       });
     });
-    
-    // Ordenar los resultados por nombre del avión
+
     resultados.sort((a, b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
-    
+
     this.resultadosTabla = resultados;
     this.aplicarBusqueda();
-    console.log('Resultados filtrados:', resultados);
   }
 
   aplicarBusqueda(): void {
@@ -257,26 +246,22 @@ export class SquadToolComponent implements OnInit {
     }
 
     const termino = this.terminoBusqueda.toLowerCase().trim();
-    this.resultadosFiltrados = this.resultadosTabla.filter(resultado => 
+    this.resultadosFiltrados = this.resultadosTabla.filter(resultado =>
       resultado.nombreCompleto.toLowerCase().includes(termino) ||
       resultado.jugador.toLowerCase().includes(termino)
     );
   }
-  
+
   onToggleSeleccion(resultado: ResultadoTabla): void {
     const index = this.seleccionados.findIndex(s => s.id === resultado.id);
-    
+
     if (index > -1) {
-      // Deseleccionar
       this.seleccionados.splice(index, 1);
       resultado.seleccionado = false;
     } else {
-      // Seleccionar
-      this.seleccionados.push({...resultado, seleccionado: true});
+      this.seleccionados.push({ ...resultado, seleccionado: true });
       resultado.seleccionado = true;
     }
-    
-    console.log('Seleccionados:', this.seleccionados);
   }
 
   descargarPlantilla(): void {
