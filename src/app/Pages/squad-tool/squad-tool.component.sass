@@ -1,0 +1,107 @@
+.images
+    display: flex
+    -webkit-box-pack: center
+    justify-content: center
+    -webkit-box-align: center
+    align-items: center
+    height: 40px
+    width: 55px
+    position: relative
+    img
+        height: 40px;
+        position: absolute;
+        display: block;
+        margin: auto;
+
+
+
+.contentData
+    display: grid
+    grid-template-columns: repeat(8, 1fr)
+    width: 100%
+    margin: 0 auto
+    gap: 20px
+    &-filters
+        grid-column: span 1
+    &-results
+        grid-column: span 5
+    
+    &-selected
+        grid-column: span 2
+
+
+
+
+
+.fileBox
+    display: flex
+    align-items: flex-end
+    gap: 30px
+    margin: 0 0 30px 0
+    &-left
+        flex: 1
+        h3
+            margin: 0 0 8px 0
+            padding: 0
+            font-size: 18px
+        ::ng-deep .p-button
+            height: 100%
+    &-right
+        width: 200px
+        ::ng-deep .p-button
+            height: 38px
+            display: flex
+            align-items: center
+
+
+.filtersBox
+    display: flex
+    gap: 30px
+    align-items: flex-end
+    margin: 0 0 30px 0
+    > div
+        flex: 1
+    h3
+        margin: 0 0 8px 0
+        padding: 0
+        font-size: 18px
+    .typeBox
+        display: flex
+        gap: 12px
+        justify-content: center
+        &-type
+            display: flex
+            align-items: center
+            flex-direction: column
+            gap: 16px
+            img
+                width: 42px
+                cursor: pointer
+
+.colType
+    width: 55px !important
+    text-align: center !important
+
+
+.boxTables
+    display: flex
+    gap: 30px
+    table
+        tr
+            td
+                padding: 0 !important
+    h3
+        margin: 0 0 8px 0
+        padding: 0
+        font-size: 18px
+    .tableResults
+        flex: 1
+        &-table
+            max-height: 286px
+            overflow-y: auto
+    .tableSelected
+        width: 450px
+
+
+::ng-deep .p-datatable-tbody > tr > td
+    padding: 4px

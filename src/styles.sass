@@ -1,14 +1,16 @@
+@import 'primeicons/primeicons.css'
+
 body
     margin: 0
-    padding: 0
+    padding: 0 0 130px 0
     font-family: var(--p-family)
-    background-color: var(--p-content-background)
     color: var(--p-content-color)
     -webkit-font-smoothing: antialiased
     -moz-osx-font-smoothing: grayscale
-    background-color: #12171D
     color: #ffffff
     font-family: "League Spartan", sans-serif;
+    background-image: url('/assets/images/what-the-hex-dark.png')
+
 *
     box-sizing: border-box
 
@@ -21,3 +23,33 @@ body
 .p-datatable-tbody > tr
     background: transparent !important
     color: #ffffff !important
+
+.titleGeneral
+    font-size: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0 0 20px 0
+
+.paragraphGeneral
+    font-size: 20px;
+    line-height: 140%;
+    margin: 0 0 20px 0
+    max-width: 920px
+
+
+.p-breadcrumb
+    background-color: transparent !important
+    margin: 0 0 16px 0
+    &-list
+        align-items: flex-end !important
+    &-item
+        &-label
+            display: block
+            line-height: .75
+
+
+.boxCard
+    background-color: #171717
+    border: 1px solid #666666
+    border-radius: 8px
+    padding: 16px
