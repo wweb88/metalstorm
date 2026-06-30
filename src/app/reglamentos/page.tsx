@@ -57,7 +57,7 @@ export default function ReglamentosPage() {
             </h3>
             <ul className="space-y-4">
               {[
-                "Mínimo 150 puntos en el evento de caja de escuadrón",
+                "Mínimo 170 puntos en el evento de caja de escuadrón",
                 "Uso obligatorio de WhatsApp",
                 "Máximo 3 días consecutivos de inactividad",
                 "Mínimo 23.000k de copas"
@@ -78,7 +78,7 @@ export default function ReglamentosPage() {
             </h3>
             <ul className="space-y-4">
               {[
-                "Mínimo 150 puntos en el evento de caja de escuadrón",
+                "Mínimo 170 puntos en el evento de caja de escuadrón",
                 "Uso obligatorio de WhatsApp",
                 "Máximo 3 días consecutivos de inactividad",
                 "Mínimo 7.000k de copas"

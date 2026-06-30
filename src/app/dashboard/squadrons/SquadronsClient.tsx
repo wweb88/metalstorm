@@ -209,7 +209,7 @@ export function SquadronsClient({
             activeTab === 'PILOTS' ? 'bg-[var(--color-gaming-accent)] text-black' : 'text-gray-400 hover:text-white hover:bg-white/5'
           }`}
         >
-          <UserPlus className="w-4 h-4" /> Asignar Pilotos
+          <UserPlus className="w-4 h-4" /> Pilotos
         </button>
         <button 
           onClick={() => { setActiveTab('SQUAD_BUILDER'); setError(''); setSuccessMsg(''); }}
