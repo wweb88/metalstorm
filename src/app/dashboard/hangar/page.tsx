@@ -75,7 +75,7 @@ export default async function HangarPage() {
           pilotAirplanes={pilotAirplanes || []} 
           currentUserRole={currentUserRole}
           currentUserId={user.id}
-          tacticalImages={tacticalImages || []}
+          tacticalImages={(tacticalImages as any) || []}
         />
       )}
     </div>

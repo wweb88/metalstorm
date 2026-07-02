@@ -109,7 +109,7 @@ export default async function SquadronsPage() {
         airplanes={airplanes || []}
         currentUserRole={profile?.role || 'STAFF'}
         currentUserId={user.id}
-        tacticalImages={tacticalImages || []}
+        tacticalImages={(tacticalImages as any) || []}
       />
     </div>
   );
