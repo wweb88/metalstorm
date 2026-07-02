@@ -34,6 +34,17 @@ export function TacticalImageModal({ airplaneId, airplaneName, onClose, editingI
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      // Límite de 4MB para evitar errores 413 Payload Too Large en Vercel
+      if (file.size > 4 * 1024 * 1024) {
+        setError('La imagen es demasiado pesada. El tamaño máximo permitido es 4MB.');
+        e.target.value = ''; // Limpiar el input
+        setSelectedFile(null);
+        if (!editingImage) setPreviewUrl(null);
+        return;
+      }
+
+      setError('');
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
