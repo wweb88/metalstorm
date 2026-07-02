@@ -48,7 +48,9 @@ export function SquadronsClient({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [activeTab, setActiveTab] = useState<'SQUADRONS' | 'PILOTS' | 'CREATE_PILOT' | 'SQUAD_BUILDER'>('SQUADRONS');
+  const [activeTab, setActiveTab] = useState<'SQUADRONS' | 'PILOTS' | 'CREATE_PILOT' | 'SQUAD_BUILDER'>(
+    currentUserRole === 'PILOT' ? 'SQUAD_BUILDER' : 'SQUADRONS'
+  );
   
   // Estado para la edición inline del nombre de escuadrón
   const [editingSquadronId, setEditingSquadronId] = useState<string | null>(null);
@@ -199,22 +201,26 @@ export function SquadronsClient({
     <div className="space-y-8">
       {/* Tabs de Navegación Interna */}
       <div className="flex flex-wrap gap-4 border-b border-white/10 pb-4">
-        <button 
-          onClick={() => { setActiveTab('SQUADRONS'); setError(''); setSuccessMsg(''); }}
-          className={`px-6 py-2 rounded-xl font-bold uppercase tracking-wider transition-all ${
-            activeTab === 'SQUADRONS' ? 'bg-[var(--color-gaming-secondary)] text-black' : 'text-gray-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          Ver Escuadrones
-        </button>
-        <button 
-          onClick={() => { setActiveTab('PILOTS'); setError(''); setSuccessMsg(''); }}
-          className={`px-6 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
-            activeTab === 'PILOTS' ? 'bg-[var(--color-gaming-accent)] text-black' : 'text-gray-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <UserPlus className="w-4 h-4" /> Pilotos
-        </button>
+        {currentUserRole !== 'PILOT' && (
+          <>
+            <button 
+              onClick={() => { setActiveTab('SQUADRONS'); setError(''); setSuccessMsg(''); }}
+              className={`px-6 py-2 rounded-xl font-bold uppercase tracking-wider transition-all ${
+                activeTab === 'SQUADRONS' ? 'bg-[var(--color-gaming-secondary)] text-black' : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              Ver Escuadrones
+            </button>
+            <button 
+              onClick={() => { setActiveTab('PILOTS'); setError(''); setSuccessMsg(''); }}
+              className={`px-6 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
+                activeTab === 'PILOTS' ? 'bg-[var(--color-gaming-accent)] text-black' : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <UserPlus className="w-4 h-4" /> Pilotos
+            </button>
+          </>
+        )}
         <button 
           onClick={() => { setActiveTab('SQUAD_BUILDER'); setError(''); setSuccessMsg(''); }}
           className={`px-6 py-2 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${

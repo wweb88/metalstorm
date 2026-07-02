@@ -60,12 +60,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {isLeader && (
-            <Link href="/dashboard/squadrons" className="flex items-center gap-2 px-4 py-2 bg-[var(--color-gaming-secondary)]/10 hover:bg-[var(--color-gaming-secondary)]/20 border border-[var(--color-gaming-secondary)]/30 text-[var(--color-gaming-secondary)] rounded-lg font-bold uppercase text-sm transition-colors">
-              <Shield className="w-4 h-4" />
-              Gestión
-            </Link>
-          )}
+          <Link href="/dashboard/squadrons" className="flex items-center gap-2 px-4 py-2 bg-[var(--color-gaming-secondary)]/10 hover:bg-[var(--color-gaming-secondary)]/20 border border-[var(--color-gaming-secondary)]/30 text-[var(--color-gaming-secondary)] rounded-lg font-bold uppercase text-sm transition-colors">
+            <Shield className="w-4 h-4" />
+            Gestión
+          </Link>
           
           <Link href="/dashboard/hangar" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-lg font-bold uppercase text-sm transition-colors">
             <Plane className="w-4 h-4" />

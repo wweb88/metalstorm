@@ -21,9 +21,7 @@ export default async function SquadronsPage() {
     .eq('id', user.id)
     .single();
 
-  if (profile?.role !== 'SUPER_ADMIN' && profile?.role !== 'ADMIN' && profile?.role !== 'STAFF') {
-    redirect('/dashboard/hangar');
-  }
+  // Allow all roles to access this page since pilots need access to 'Armar Escuadrón'
 
   // Fetch squadrons and their associated pilots
   const { data: squadronsData } = await supabase
