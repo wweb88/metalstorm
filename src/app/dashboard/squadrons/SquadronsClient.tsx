@@ -34,12 +34,16 @@ export function SquadronsClient({
   squadrons, 
   allProfiles,
   airplanes,
-  currentUserRole 
+  currentUserRole,
+  currentUserId,
+  tacticalImages = []
 }: { 
   squadrons: SquadronData[],
   allProfiles: ProfileData[],
   airplanes: Airplane[],
-  currentUserRole: string
+  currentUserRole: string,
+  currentUserId: string,
+  tacticalImages?: any[]
 }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState('');
@@ -648,6 +652,9 @@ export function SquadronsClient({
                 pilotAirplanes={viewingHangarFor.pilotAirplanes || []} 
                 readOnly={!canManageSquadrons}
                 targetProfileId={viewingHangarFor.id}
+                tacticalImages={tacticalImages}
+                currentUserRole={currentUserRole}
+                currentUserId={currentUserId}
               />
             </div>
           </div>

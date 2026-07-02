@@ -17,6 +17,14 @@ export default async function HangarPage() {
     redirect('/login');
   }
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  const currentUserRole = profile?.role || 'PILOT';
+
   // Fetch all airplanes
   const { data: airplanes } = await supabase
     .from('airplanes')
@@ -28,6 +36,20 @@ export default async function HangarPage() {
     .from('pilot_airplanes')
     .select('*')
     .eq('profile_id', user.id);
+
+  // Fetch tactical images
+  const { data: tacticalImages } = await supabase
+    .from('airplane_tactical_images')
+    .select(`
+      id,
+      airplane_id,
+      image_url,
+      game_modes,
+      comment,
+      uploader_id,
+      created_at,
+      profiles!uploader_id ( username )
+    `);
 
   return (
     <div>
@@ -51,6 +73,9 @@ export default async function HangarPage() {
         <HangarGrid 
           airplanes={airplanes || []} 
           pilotAirplanes={pilotAirplanes || []} 
+          currentUserRole={currentUserRole}
+          currentUserId={user.id}
+          tacticalImages={tacticalImages || []}
         />
       )}
     </div>

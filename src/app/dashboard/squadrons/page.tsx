@@ -71,6 +71,20 @@ export default async function SquadronsPage() {
     .select('*')
     .order('name');
 
+  // Fetch tactical images
+  const { data: tacticalImages } = await supabase
+    .from('airplane_tactical_images')
+    .select(`
+      id,
+      airplane_id,
+      image_url,
+      game_modes,
+      comment,
+      uploader_id,
+      created_at,
+      profiles!uploader_id ( username )
+    `);
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
@@ -93,7 +107,9 @@ export default async function SquadronsPage() {
           pilotAirplanes: p.pilot_airplanes || []
         }))} 
         airplanes={airplanes || []}
-        currentUserRole={profile?.role || 'STAFF'} 
+        currentUserRole={profile?.role || 'STAFF'}
+        currentUserId={user.id}
+        tacticalImages={tacticalImages || []}
       />
     </div>
   );

@@ -3,7 +3,9 @@
 import { useState, useTransition } from 'react';
 import { togglePlane, updatePlaneLevel } from './actions';
 import { cn } from '@/lib/utils';
-import { Lock, Unlock, ShieldAlert, Zap, Cpu, Loader2, Filter, SearchX, Wrench } from 'lucide-react';
+import { Lock, Unlock, ShieldAlert, Zap, Cpu, Loader2, Filter, SearchX, Wrench, ImagePlus, Images } from 'lucide-react';
+import { TacticalImageModal } from './TacticalImageModal';
+import { TacticalGalleryModal, TacticalImage } from './TacticalGalleryModal';
 
 type Airplane = {
   id: string;
@@ -43,11 +45,16 @@ interface HangarGridProps {
   pilotAirplanes: PilotAirplane[];
   readOnly?: boolean;
   targetProfileId?: string;
+  currentUserRole?: string;
+  currentUserId?: string;
+  tacticalImages?: TacticalImage[];
 }
 
-export function HangarGrid({ airplanes, pilotAirplanes, readOnly = false, targetProfileId }: HangarGridProps) {
+export function HangarGrid({ airplanes, pilotAirplanes, readOnly = false, targetProfileId, currentUserRole = 'PILOT', currentUserId, tacticalImages = [] }: HangarGridProps) {
   const [isPending, startTransition] = useTransition();
   const [loadingPlaneId, setLoadingPlaneId] = useState<string | null>(null);
+  const [uploadingForPlane, setUploadingForPlane] = useState<Airplane | null>(null);
+  const [viewingGalleryForPlane, setViewingGalleryForPlane] = useState<Airplane | null>(null);
 
   // Crear un mapa para acceso rápido
   const pilotPlanesMap = new Map<string, PilotAirplane>(
@@ -71,10 +78,22 @@ export function HangarGrid({ airplanes, pilotAirplanes, readOnly = false, target
   };
 
   const sortedAirplanes = [...airplanes].sort((a, b) => {
-    const aUnlocked = pilotPlanesMap.get(a.id)?.is_unlocked || false;
-    const bUnlocked = pilotPlanesMap.get(b.id)?.is_unlocked || false;
+    const aData = pilotPlanesMap.get(a.id);
+    const bData = pilotPlanesMap.get(b.id);
+    const aUnlocked = aData?.is_unlocked || false;
+    const bUnlocked = bData?.is_unlocked || false;
+    
     if (aUnlocked && !bUnlocked) return -1;
     if (!aUnlocked && bUnlocked) return 1;
+    
+    if (aUnlocked && bUnlocked) {
+      const aLevel = aData?.level || 1;
+      const bLevel = bData?.level || 1;
+      if (aLevel !== bLevel) {
+        return bLevel - aLevel;
+      }
+    }
+    
     return a.name.localeCompare(b.name);
   });
 
@@ -196,6 +215,31 @@ export function HangarGrid({ airplanes, pilotAirplanes, readOnly = false, target
 
             {/* Imagen del Avión */}
             <div className="relative h-40 w-full flex items-center justify-center p-4">
+              {/* Botones de Imágenes Tácticas */}
+              <div className="absolute top-2 left-2 flex flex-col gap-2 z-20">
+                {currentUserRole !== 'PILOT' && (
+                  <button
+                    onClick={() => setUploadingForPlane(plane)}
+                    className="p-2 bg-black/60 hover:bg-[var(--color-gaming-accent)] text-white hover:text-black rounded-lg backdrop-blur border border-white/10 transition-colors"
+                    title="Subir Guía Táctica"
+                  >
+                    <ImagePlus className="w-4 h-4" />
+                  </button>
+                )}
+                {tacticalImages.filter(img => img.airplane_id === plane.id).length > 0 && (
+                  <button
+                    onClick={() => setViewingGalleryForPlane(plane)}
+                    className="p-2 bg-black/60 hover:bg-[var(--color-gaming-accent)] text-[var(--color-gaming-accent)] hover:text-black rounded-lg backdrop-blur border border-[var(--color-gaming-accent)]/50 transition-colors flex items-center justify-center relative"
+                    title="Ver Guías Tácticas"
+                  >
+                    <Images className="w-4 h-4" />
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                      {tacticalImages.filter(img => img.airplane_id === plane.id).length}
+                    </span>
+                  </button>
+                )}
+              </div>
+
               <img 
                 src={`/assets/images/planes/${plane.name === 'JF-17' ? 'Jf-17' : plane.name.replace(/\//g, '')}.png`}
                 alt={plane.name} 
@@ -234,53 +278,57 @@ export function HangarGrid({ airplanes, pilotAirplanes, readOnly = false, target
                   )}
                 </div>
 
-                {/* Habilidad Especial */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-yellow-500" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-300">Hab. Especial</span>
-                  </div>
-                  {readOnly ? (
-                    <div className="bg-black/80 border border-white/20 text-yellow-500 rounded-lg px-3 py-1 text-sm font-bold">
-                      {ownedData.special_ability_level === 0 ? 'Bloqueada' : `Nvl. ${ownedData.special_ability_level}`}
+                {/* Habilidad Especial (Nivel >= 8) */}
+                {ownedData.level >= 8 && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-yellow-500" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-gray-300">Hab. Especial</span>
                     </div>
-                  ) : (
-                    <select
-                      value={ownedData.special_ability_level}
-                      onChange={(e) => handleLevelChange(plane.id, 'special_ability_level', parseInt(e.target.value))}
-                      disabled={isPending}
-                      className="bg-black/80 border border-white/20 text-yellow-500 rounded-lg px-3 py-1 text-sm font-bold focus:border-yellow-500 focus:outline-none"
-                    >
-                      {Array.from({ length: 4 }, (_, i) => i).map(n => (
-                        <option key={n} value={n}>{n === 0 ? 'Bloqueada' : `Nvl. ${n}`}</option>
-                      ))}
-                    </select>
-                  )}
-                </div>
+                    {readOnly ? (
+                      <div className="bg-black/80 border border-white/20 text-yellow-500 rounded-lg px-3 py-1 text-sm font-bold">
+                        {ownedData.special_ability_level === 0 ? 'Bloqueada' : `Nvl. ${ownedData.special_ability_level}`}
+                      </div>
+                    ) : (
+                      <select
+                        value={ownedData.special_ability_level}
+                        onChange={(e) => handleLevelChange(plane.id, 'special_ability_level', parseInt(e.target.value))}
+                        disabled={isPending}
+                        className="bg-black/80 border border-white/20 text-yellow-500 rounded-lg px-3 py-1 text-sm font-bold focus:border-yellow-500 focus:outline-none"
+                      >
+                        {Array.from({ length: 4 }, (_, i) => i).map(n => (
+                          <option key={n} value={n}>{n === 0 ? 'Bloqueada' : `Nvl. ${n}`}</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                )}
 
-                {/* Habilidad Pasiva */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Cpu className="w-4 h-4 text-[var(--color-gaming-secondary)]" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-300">Hab. Pasiva</span>
-                  </div>
-                  {readOnly ? (
-                    <div className="bg-black/80 border border-white/20 text-[var(--color-gaming-secondary)] rounded-lg px-3 py-1 text-sm font-bold">
-                      {ownedData.passive_ability_level === 0 ? 'Bloqueada' : `Nvl. ${ownedData.passive_ability_level}`}
+                {/* Habilidad Pasiva (Nivel >= 12) */}
+                {ownedData.level >= 12 && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Cpu className="w-4 h-4 text-[var(--color-gaming-secondary)]" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-gray-300">Hab. Pasiva</span>
                     </div>
-                  ) : (
-                    <select
-                      value={ownedData.passive_ability_level}
-                      onChange={(e) => handleLevelChange(plane.id, 'passive_ability_level', parseInt(e.target.value))}
-                      disabled={isPending}
-                      className="bg-black/80 border border-white/20 text-[var(--color-gaming-secondary)] rounded-lg px-3 py-1 text-sm font-bold focus:border-[var(--color-gaming-secondary)] focus:outline-none"
-                    >
-                      {Array.from({ length: 6 }, (_, i) => i).map(n => (
-                        <option key={n} value={n}>{n === 0 ? 'Bloqueada' : `Nvl. ${n}`}</option>
-                      ))}
-                    </select>
-                  )}
-                </div>
+                    {readOnly ? (
+                      <div className="bg-black/80 border border-white/20 text-[var(--color-gaming-secondary)] rounded-lg px-3 py-1 text-sm font-bold">
+                        {ownedData.passive_ability_level === 0 ? 'Bloqueada' : `Nvl. ${ownedData.passive_ability_level}`}
+                      </div>
+                    ) : (
+                      <select
+                        value={ownedData.passive_ability_level}
+                        onChange={(e) => handleLevelChange(plane.id, 'passive_ability_level', parseInt(e.target.value))}
+                        disabled={isPending}
+                        className="bg-black/80 border border-white/20 text-[var(--color-gaming-secondary)] rounded-lg px-3 py-1 text-sm font-bold focus:border-[var(--color-gaming-secondary)] focus:outline-none"
+                      >
+                        {Array.from({ length: 6 }, (_, i) => i).map(n => (
+                          <option key={n} value={n}>{n === 0 ? 'Bloqueada' : `Nvl. ${n}`}</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                )}
 
                 {/* Modificadores (Nivel >= 16) */}
                 {ownedData.level >= 16 && (
@@ -438,6 +486,24 @@ export function HangarGrid({ airplanes, pilotAirplanes, readOnly = false, target
         );
         })}
         </div>
+      )}
+      {/* Modals de Imágenes Tácticas */}
+      {uploadingForPlane && (
+        <TacticalImageModal
+          airplaneId={uploadingForPlane.id}
+          airplaneName={uploadingForPlane.name}
+          onClose={() => setUploadingForPlane(null)}
+        />
+      )}
+      
+      {viewingGalleryForPlane && (
+        <TacticalGalleryModal
+          airplaneName={viewingGalleryForPlane.name}
+          images={tacticalImages.filter(img => img.airplane_id === viewingGalleryForPlane.id)}
+          onClose={() => setViewingGalleryForPlane(null)}
+          currentUserRole={currentUserRole}
+          currentUserId={currentUserId}
+        />
       )}
     </div>
   );
