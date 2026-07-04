@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { createSquadron, deleteSquadron, assignPilotToSquadron, adminCreatePilot, editSquadron, togglePilotStatus, updatePilotRole } from './actions';
-import { Shield, Users, Trash2, Plus, Loader2, UserPlus, UserCircle, Edit2, Check, X, UserMinus, UserCheck, AlertTriangle, Plane, ShieldCheck } from 'lucide-react';
+import { createSquadron, deleteSquadron, assignPilotToSquadron, adminCreatePilot, editSquadron, togglePilotStatus, updatePilotRole, adminResetPassword } from './actions';
+import { Shield, Users, Trash2, Plus, Loader2, UserPlus, UserCircle, Edit2, Check, X, UserMinus, UserCheck, AlertTriangle, Plane, ShieldCheck, Key } from 'lucide-react';
 import { HangarGrid } from '../HangarGrid';
 import { SquadBuilderDB } from './SquadBuilderDB';
 
@@ -70,6 +70,19 @@ export function SquadronsClient({
     title: '',
     message: '',
     onConfirm: () => {},
+  });
+
+  // Estado para el Modal de Reset Password
+  const [resetPasswordModal, setResetPasswordModal] = useState<{
+    isOpen: boolean;
+    profileId: string | null;
+    username: string;
+    newPassword: '';
+  }>({
+    isOpen: false,
+    profileId: null,
+    username: '',
+    newPassword: '',
   });
 
   // Estado para el Modal de Hangar
@@ -194,6 +207,21 @@ export function SquadronsClient({
     startTransition(async () => {
       const res = await updatePilotRole(profileId, newRole);
       if (res.error) setError(res.error);
+    });
+  };
+
+  const handleResetPasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetPasswordModal.profileId || !resetPasswordModal.newPassword) return;
+
+    startTransition(async () => {
+      const res = await adminResetPassword(resetPasswordModal.profileId!, resetPasswordModal.newPassword);
+      if (res.error) {
+        setError(res.error);
+      } else {
+        setSuccessMsg(`Contraseña de ${resetPasswordModal.username} restablecida con éxito.`);
+        setResetPasswordModal({ isOpen: false, profileId: null, username: '', newPassword: '' });
+      }
     });
   };
 
@@ -472,18 +500,30 @@ export function SquadronsClient({
                       </td>
                       {canManageSquadrons && (
                         <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() => handleToggleStatus(profile.id, !isSuspended)}
-                            disabled={isPending}
-                            className={`p-2 rounded-lg transition-colors font-bold flex items-center justify-center gap-2 w-full max-w-[140px] ml-auto border
-                              ${isSuspended 
-                                ? 'bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20' 
-                                : 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'}`}
-                            title={isSuspended ? 'Reactivar' : 'Dar de baja'}
-                          >
-                            {isSuspended ? <UserCheck className="w-4 h-4" /> : <UserMinus className="w-4 h-4" />}
-                            <span className="text-xs uppercase tracking-widest">{isSuspended ? 'Reactivar' : 'Suspender'}</span>
-                          </button>
+                          <div className="flex flex-col gap-2 justify-end items-end">
+                            <button
+                              onClick={() => handleToggleStatus(profile.id, !isSuspended)}
+                              disabled={isPending}
+                              className={`p-2 rounded-lg transition-colors font-bold flex items-center justify-center gap-2 w-full max-w-[140px] border
+                                ${isSuspended 
+                                  ? 'bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20' 
+                                  : 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'}`}
+                              title={isSuspended ? 'Reactivar' : 'Dar de baja'}
+                            >
+                              {isSuspended ? <UserCheck className="w-4 h-4" /> : <UserMinus className="w-4 h-4" />}
+                              <span className="text-xs uppercase tracking-widest">{isSuspended ? 'Reactivar' : 'Suspender'}</span>
+                            </button>
+                            
+                            <button
+                              onClick={() => setResetPasswordModal({ isOpen: true, profileId: profile.id, username: profile.username, newPassword: '' })}
+                              disabled={isPending}
+                              className="p-2 rounded-lg transition-colors font-bold flex items-center justify-center gap-2 w-full max-w-[140px] border bg-yellow-500/10 text-yellow-400 border-yellow-500/20 hover:bg-yellow-500/20"
+                              title="Resetear Clave"
+                            >
+                              <Key className="w-4 h-4" />
+                              <span className="text-xs uppercase tracking-widest">Clave</span>
+                            </button>
+                          </div>
                         </td>
                       )}
                     </tr>
@@ -663,6 +703,77 @@ export function SquadronsClient({
                 currentUserId={currentUserId}
               />
             </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Confirm Modal */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 animate-in fade-in">
+          <div className="bg-[#050508] border border-white/20 p-8 rounded-3xl max-w-sm w-full shadow-2xl">
+            <h3 className="text-xl font-black mb-4 uppercase tracking-wider">{confirmModal.title}</h3>
+            <p className="text-gray-400 mb-8">{confirmModal.message}</p>
+            <div className="flex gap-4">
+              <button
+                onClick={closeConfirm}
+                className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  confirmModal.onConfirm();
+                  closeConfirm();
+                }}
+                className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-colors shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {resetPasswordModal.isOpen && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 animate-in fade-in">
+          <div className="bg-[#050508] border border-[var(--color-gaming-accent)]/30 p-8 rounded-3xl max-w-sm w-full shadow-[0_0_30px_rgba(var(--color-gaming-accent-rgb),0.2)]">
+            <h3 className="text-xl font-black mb-2 uppercase tracking-wider text-white">Resetear Clave</h3>
+            <p className="text-gray-400 mb-6 text-sm">
+              Asignar una nueva contraseña para <strong className="text-[var(--color-gaming-accent)]">{resetPasswordModal.username}</strong>
+            </p>
+            <form onSubmit={handleResetPasswordSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Nueva Contraseña</label>
+                <input
+                  type="text"
+                  required
+                  minLength={6}
+                  value={resetPasswordModal.newPassword}
+                  onChange={(e) => setResetPasswordModal({ ...resetPasswordModal, newPassword: e.target.value as any })}
+                  className="w-full bg-black/60 border-2 border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-gaming-accent)] transition-colors"
+                  placeholder="ej: 123456"
+                />
+              </div>
+              
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setResetPasswordModal({ isOpen: false, profileId: null, username: '', newPassword: '' })}
+                  disabled={isPending}
+                  className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-colors text-white"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="flex-1 px-4 py-3 bg-[var(--color-gaming-accent)] text-black rounded-xl font-black uppercase tracking-wider hover:bg-[var(--color-gaming-accent-hover)] transition-colors shadow-[0_0_20px_rgba(var(--color-gaming-accent-rgb),0.3)] flex items-center justify-center gap-2"
+                >
+                  {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Guardar'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -4,8 +4,26 @@ import { useState } from 'react';
 import { login } from './actions';
 import { Shield, Mail, Lock, User, AlertCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 import { Suspense } from 'react';
+import { useFormStatus } from 'react-dom';
+import { Loader2 } from 'lucide-react';
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button 
+      type="submit"
+      disabled={pending}
+      className="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-[var(--color-gaming-accent)] to-[#00b3cc] text-black font-black uppercase tracking-widest hover:brightness-110 hover:shadow-[0_0_30px_rgba(0,229,255,0.4)] transition-all transform hover:-translate-y-1 disabled:opacity-70 disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+    >
+      {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+      {pending ? 'Iniciando...' : 'Iniciar Sesión'}
+    </button>
+  );
+}
 
 function LoginContent() {
   const searchParams = useSearchParams();
@@ -37,7 +55,7 @@ function LoginContent() {
             </div>
           )}
 
-          <form className="space-y-4">
+          <form action={login} className="space-y-4">
 
 
             <div className="space-y-2">
@@ -70,14 +88,14 @@ function LoginContent() {
                   placeholder="••••••••"
                 />
               </div>
+              <div className="flex justify-end mt-2">
+                <Link href="/forgot-password" className="text-xs font-bold text-[var(--color-gaming-accent)] hover:text-white uppercase tracking-wider transition-colors">
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
             </div>
 
-            <button 
-              formAction={login}
-              className="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-[var(--color-gaming-accent)] to-[#00b3cc] text-black font-black uppercase tracking-widest hover:brightness-110 hover:shadow-[0_0_30px_rgba(0,229,255,0.4)] transition-all transform hover:-translate-y-1"
-            >
-              Iniciar Sesión
-            </button>
+            <SubmitButton />
           </form>
 
 

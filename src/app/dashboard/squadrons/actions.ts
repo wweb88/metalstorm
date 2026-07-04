@@ -243,3 +243,34 @@ export async function updatePilotRole(profileId: string, newRole: string) {
   revalidatePath('/dashboard/squadrons')
   return { success: true }
 }
+
+export async function adminResetPassword(profileId: string, newPassword: string) {
+  const supabase = await createClient()
+
+  // Verify permissions
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autorizado' }
+
+  const { data: callerProfile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (callerProfile?.role !== 'SUPER_ADMIN' && callerProfile?.role !== 'ADMIN') {
+    return { error: 'No tienes permisos para resetear contraseñas' }
+  }
+
+  if (newPassword.length < 6) {
+    return { error: 'La contraseña debe tener al menos 6 caracteres' }
+  }
+
+  const adminClient = createAdminClient()
+  const { error } = await adminClient.auth.admin.updateUserById(profileId, {
+    password: newPassword
+  })
+
+  if (error) return { error: error.message }
+
+  return { success: true }
+}

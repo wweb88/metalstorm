@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { logout } from '../login/actions';
 import { LogOut, User, Settings, Shield, Plane } from 'lucide-react';
 import Link from 'next/link';
+import { LogoutButton } from './LogoutButton';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -30,11 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <p className="text-gray-400">
             Tu acceso a la plataforma ha sido revocado. Por favor, contacta a un administrador de tu escuadrón si crees que esto es un error.
           </p>
-          <form action={logout}>
-            <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold uppercase tracking-wider text-white transition-colors w-full">
-              Cerrar Sesión
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </div>
     );
@@ -75,12 +72,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             Perfil
           </Link>
           
-          <form action={logout}>
-            <button className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg font-bold uppercase text-sm transition-colors">
-              <LogOut className="w-4 h-4" />
-              Salir
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </header>
 
