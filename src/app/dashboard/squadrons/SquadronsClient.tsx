@@ -27,6 +27,7 @@ type ProfileData = {
   squadron_id: string | null;
   is_active?: boolean;
   activePlanesCount?: number;
+  totalTrophies?: number;
   pilotAirplanes?: any[];
 };
 
@@ -422,6 +423,7 @@ export function SquadronsClient({
                   <th className="px-6 py-4">Piloto (Username)</th>
                   <th className="px-6 py-4">Rango</th>
                   <th className="px-6 py-4">Aviones</th>
+                  <th className="px-6 py-4">Trofeos</th>
                   <th className="px-6 py-4">Escuadrón</th>
                   {canManageSquadrons && <th className="px-6 py-4 text-right">Acciones</th>}
                 </tr>
@@ -478,6 +480,14 @@ export function SquadronsClient({
                         >
                           {profile.activePlanesCount || 0}
                         </button>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <img src="/assets/images/Trophy-icon.webp" alt="Trophy" className="w-4 h-4 object-contain" />
+                          <span className="text-yellow-500 font-bold tracking-wider">
+                            {(profile.totalTrophies || 0).toLocaleString('es-ES')}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         {canManageSquadrons ? (

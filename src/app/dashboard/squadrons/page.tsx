@@ -102,6 +102,7 @@ export default async function SquadronsPage() {
           squadron_id: p.squadron_id,
           is_active: p.is_active,
           activePlanesCount: p.pilot_airplanes?.filter((pa: any) => pa.is_unlocked).length || 0,
+          totalTrophies: p.pilot_airplanes?.reduce((acc: number, pa: any) => acc + (pa.trophies || 0), 0) || 0,
           pilotAirplanes: p.pilot_airplanes || []
         }))} 
         airplanes={airplanes || []}
