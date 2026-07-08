@@ -282,3 +282,41 @@ export async function deleteTacticalImage(imageId: string, imageUrl: string) {
   return { success: true };
 }
 
+export async function updatePlaneTrophies(airplaneId: string, trophies: number, targetProfileId?: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return { error: 'No autorizado' }
+
+  let profileIdToUpdate = user.id;
+
+  if (targetProfileId && targetProfileId !== user.id) {
+    const { data: callerProfile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (callerProfile?.role !== 'SUPER_ADMIN' && callerProfile?.role !== 'ADMIN') {
+      return { error: 'No tienes permisos para editar el hangar de otro piloto' }
+    }
+    
+    profileIdToUpdate = targetProfileId;
+  }
+
+  const adminClient = createAdminClient();
+
+  const { error } = await adminClient
+    .from('pilot_airplanes')
+    .update({ trophies })
+    .eq('profile_id', profileIdToUpdate)
+    .eq('airplane_id', airplaneId)
+
+  if (error) {
+    console.error('Error updating trophies:', error)
+    return { error: error.message }
+  }
+
+  revalidatePath('/dashboard/hangar')
+  return { success: true }
+}

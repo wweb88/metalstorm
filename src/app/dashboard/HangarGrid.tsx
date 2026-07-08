@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { togglePlane, updatePlaneLevel } from './actions';
+import { togglePlane, updatePlaneLevel, updatePlaneTrophies } from './actions';
 import { cn } from '@/lib/utils';
-import { Lock, Unlock, ShieldAlert, Zap, Cpu, Loader2, Filter, SearchX, Wrench, ImagePlus, Images } from 'lucide-react';
+import { Lock, Unlock, ShieldAlert, Zap, Cpu, Loader2, Filter, SearchX, Wrench, ImagePlus, Images, Trophy } from 'lucide-react';
 import { TacticalImageModal } from './TacticalImageModal';
 import { TacticalGalleryModal, TacticalImage } from './TacticalGalleryModal';
 
@@ -25,6 +25,7 @@ type PilotAirplane = {
   mod1_level: number | null;
   mod2_name: string | null;
   mod2_level: number | null;
+  trophies?: number;
 };
 
 const MODIFIERS = [
@@ -48,6 +49,70 @@ interface HangarGridProps {
   currentUserRole?: string;
   currentUserId?: string;
   tacticalImages?: TacticalImage[];
+}
+
+function TrophyInput({ 
+  airplaneId, 
+  initialValue, 
+  readOnly, 
+  targetProfileId,
+  isPending,
+  setLoadingPlaneId
+}: { 
+  airplaneId: string; 
+  initialValue: number; 
+  readOnly: boolean; 
+  targetProfileId?: string;
+  isPending: boolean;
+  setLoadingPlaneId: (id: string) => void;
+}) {
+  const [value, setValue] = useState(initialValue?.toString() || '');
+  const [isTransitionPending, startTransition] = useTransition();
+
+  const disabled = readOnly || isPending || isTransitionPending;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only numbers, no negative sign. Also remove leading zeros unless it's just "0".
+    let raw = e.target.value.replace(/\D/g, '');
+    if (raw.length > 1) {
+      raw = raw.replace(/^0+/, '');
+    }
+    setValue(raw);
+  };
+
+  const handleBlur = () => {
+    const finalValue = parseInt(value) || 0;
+    if (finalValue === initialValue) return;
+    
+    setLoadingPlaneId(airplaneId);
+    startTransition(async () => {
+      await updatePlaneTrophies(airplaneId, finalValue, targetProfileId);
+    });
+  };
+
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <img src="/assets/images/Trophy-icon.webp" alt="Trophy" className="w-4 h-4 object-contain" />
+        <span className="text-xs font-bold uppercase tracking-wider text-gray-300">Trofeos</span>
+      </div>
+      {readOnly ? (
+        <div className="bg-black/80 border border-white/20 text-yellow-500 rounded-lg px-3 py-1 text-sm font-bold w-20 text-center">
+          {initialValue || 0}
+        </div>
+      ) : (
+        <input
+          type="text"
+          value={value}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          disabled={disabled}
+          placeholder="0"
+          className="bg-black/80 border border-white/20 text-yellow-500 rounded-lg px-3 py-1 text-sm font-bold focus:border-yellow-500 focus:outline-none w-20 text-center"
+        />
+      )}
+    </div>
+  );
 }
 
 export function HangarGrid({ airplanes, pilotAirplanes, readOnly = false, targetProfileId, currentUserRole = 'PILOT', currentUserId, tacticalImages = [] }: HangarGridProps) {
@@ -276,6 +341,18 @@ export function HangarGrid({ airplanes, pilotAirplanes, readOnly = false, target
                       ))}
                     </select>
                   )}
+                </div>
+
+                {/* Trofeos */}
+                <div className="pt-2 border-t border-white/5">
+                  <TrophyInput
+                    airplaneId={plane.id}
+                    initialValue={ownedData.trophies || 0}
+                    readOnly={readOnly}
+                    targetProfileId={targetProfileId}
+                    isPending={isPending || loadingPlaneId === plane.id}
+                    setLoadingPlaneId={setLoadingPlaneId}
+                  />
                 </div>
 
                 {/* Habilidad Especial (Nivel >= 8) */}
