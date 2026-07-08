@@ -436,6 +436,13 @@ export function SquadronsClient({
                     const bActive = b.is_active !== false;
                     if (aActive && !bActive) return -1;
                     if (!aActive && bActive) return 1;
+                    
+                    const aTrophies = a.totalTrophies || 0;
+                    const bTrophies = b.totalTrophies || 0;
+                    if (aTrophies !== bTrophies) {
+                      return bTrophies - aTrophies;
+                    }
+                    
                     return a.username.localeCompare(b.username);
                   })
                   .map((profile, index) => {
