@@ -63,6 +63,19 @@ export default async function SquadronsPage() {
 
   const { data: allProfilesData } = await profilesQuery;
 
+  // Fetch emails from auth.users if the user is ADMIN or SUPER_ADMIN
+  let authUsersMap = new Map<string, string>();
+  if (profile?.role === 'SUPER_ADMIN' || profile?.role === 'ADMIN') {
+    const { data: usersData, error: usersError } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
+    if (!usersError && usersData?.users) {
+      usersData.users.forEach(u => {
+        if (u.email) {
+          authUsersMap.set(u.id, u.email);
+        }
+      });
+    }
+  }
+
   // Fetch all airplanes for the modal
   const { data: airplanes } = await supabase
     .from('airplanes')
@@ -103,7 +116,8 @@ export default async function SquadronsPage() {
           is_active: p.is_active,
           activePlanesCount: p.pilot_airplanes?.filter((pa: any) => pa.is_unlocked).length || 0,
           totalTrophies: p.pilot_airplanes?.reduce((acc: number, pa: any) => acc + (pa.trophies || 0), 0) || 0,
-          pilotAirplanes: p.pilot_airplanes || []
+          pilotAirplanes: p.pilot_airplanes || [],
+          email: authUsersMap.get(p.id) || null
         }))} 
         airplanes={airplanes || []}
         currentUserRole={profile?.role || 'STAFF'}

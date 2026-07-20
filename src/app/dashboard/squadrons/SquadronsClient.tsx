@@ -29,6 +29,7 @@ type ProfileData = {
   activePlanesCount?: number;
   totalTrophies?: number;
   pilotAirplanes?: any[];
+  email?: string | null;
 };
 
 export function SquadronsClient({ 
@@ -451,9 +452,14 @@ export function SquadronsClient({
                     <tr key={profile.id} className={`hover:bg-white/5 transition-colors ${isSuspended ? 'bg-red-900/10 opacity-70' : ''}`}>
                       <td className="px-6 py-4 text-center text-gray-500 font-black">{index + 1}</td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className={`font-bold ${isSuspended ? 'text-red-400 line-through' : 'text-white'}`}>{profile.username}</span>
-                          {isSuspended && <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Suspendido</span>}
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-bold ${isSuspended ? 'text-red-400 line-through' : 'text-white'}`}>{profile.username}</span>
+                            {isSuspended && <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Suspendido</span>}
+                          </div>
+                          {profile.email && (
+                            <span className="text-xs text-gray-500 font-medium tracking-wide">{profile.email}</span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4">

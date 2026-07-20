@@ -81,7 +81,7 @@ export default function ReglamentosPage() {
                 "Mínimo 170 puntos en el evento de caja de escuadrón",
                 "Uso obligatorio de WhatsApp",
                 "Máximo 3 días consecutivos de inactividad",
-                "Mínimo 7.000k de copas"
+                "Mínimo 10.000k de copas"
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 text-gray-300">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
